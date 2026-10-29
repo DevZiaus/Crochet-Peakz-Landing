@@ -33,7 +33,7 @@ export default function Home() {
                         <div className='art-circle' />
                         <Image
                             className='hero-photo'
-                            src='/images/photo_2026-10-25_19-54-27.jpg'
+                            src='/images/logo.jpg'
                             alt='Colorful handmade Crochet PeakZ logo'
                             width={768}
                             height={768}

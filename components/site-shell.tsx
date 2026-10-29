@@ -21,7 +21,7 @@ export function SiteHeader() {
                 <Link href='/' className='brand' onClick={() => setOpen(false)}>
                     <span className='brand-mark'>
                         <Image
-                            src='/images/photo_2026-10-25_19-54-27.jpg'
+                            src='/images/logo.jpg'
                             alt='Crochet PeakZ mountain mark'
                             width={64}
                             height={64}
