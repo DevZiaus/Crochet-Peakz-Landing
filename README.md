@@ -1,0 +1,117 @@
+# Crochet PeakZ
+
+The Crochet PeakZ marketing site is a warm, responsive Next.js landing page for handmade crochet pieces, patterns, and future shop updates.
+
+## Features
+
+- Responsive landing page with handmade brand styling
+- Story, store, contact, privacy, and data-deletion pages
+- Responsive navigation and shared site header/footer
+- Open Graph metadata with a production `metadataBase`
+- Optional Meta Pixel integration
+- Static image assets served from `public/images`
+
+## Tech stack
+
+- Next.js 16 App Router
+- React 19 and TypeScript
+- Tailwind CSS and custom CSS
+- Radix UI components
+- Lucide icons
+- ESLint 9 with the Next.js flat configuration
+- Vercel deployment
+
+## Requirements
+
+- Node.js 20.9 or newer
+- npm
+
+## Getting started
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create a local environment file:
+
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+3. Update `.env.local` with the values for your environment.
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000).
+
+## Environment variables
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical public URL used for metadata. Defaults to `https://crochetpeakz.com`. |
+| `NEXT_PUBLIC_SUPABASE_URL` | No | Supabase project URL for future integrations. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | No | Supabase anonymous browser key for future integrations. |
+| `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID. Leave blank to disable tracking. |
+
+Variables beginning with `NEXT_PUBLIC_` are exposed to the browser. Do not put private credentials in them. Contact email delivery secrets such as `RESEND_API_KEY` and `CONTACT_EMAIL` should be configured in the relevant Supabase environment, not committed to this repository.
+
+## Available scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create an optimized production build |
+| `npm run start` | Serve the production build |
+| `npm run typecheck` | Run TypeScript checks |
+| `npm run lint` | Run ESLint |
+
+## Routes
+
+| Path | Purpose |
+| --- | --- |
+| `/` | Homepage and brand introduction |
+| `/about` | Crochet PeakZ story |
+| `/store` | Coming-soon shop page |
+| `/contact` | Contact form and contact details |
+| `/privacy` | Privacy policy |
+| `/data-deletion` | Data deletion instructions |
+
+## Project structure
+
+```text
+app/                 App Router pages, layout, and global styles
+components/          Shared site components and UI primitives
+hooks/               Reusable React hooks
+lib/                 Shared utilities
+public/images/       Static image assets
+.env.local.example   Environment variable template
+```
+
+## Contact form
+
+The current contact form is a client-side presentation flow: submitting the form displays a success state but does not yet send or persist a message. Connect it to the project’s preferred backend or email service before using it for production submissions.
+
+## Deployment
+
+The project is ready to deploy on Vercel. Import the repository into Vercel, select the project root, and use the default Next.js settings:
+
+```text
+Framework preset: Next.js
+Build command: next build
+Output directory: .next
+```
+
+Vercel detects the build command and output directory automatically. Add the variables from `.env.local.example` in the Vercel project settings before deploying. Set `NEXT_PUBLIC_SITE_URL` to the production URL so canonical and social metadata use the deployed domain.
+
+Run the production checks locally with:
+
+```bash
+npm run typecheck
+npm run build
+```
