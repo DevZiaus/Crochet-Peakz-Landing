@@ -8,6 +8,9 @@ on:
         branches:
             - main
 
+permissions:
+    contents: read
+
 concurrency:
     group: ci-${{ github.ref }}
     cancel-in-progress: true
@@ -38,4 +41,46 @@ jobs:
             - name: Build
               run: npm run build
 
+    deploy:
+        name: Deploy
+        needs: validate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci --legacy-peer-deps
+
+            - name: Deploy to Vercel
+              id: deploy
+              run: |
+                  DEPLOYMENT_URL=$(npx vercel@latest --prod --token="$VERCEL_TOKEN" | tail -n 1)
+                  echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
+                  echo "Deployed $DEPLOYMENT_URL"
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+            - name: Verify production site
+              run: |
+                  for attempt in {1..12}; do
+                      STATUS=$(curl -sS -o /dev/null -w '%{http_code}' https://crochetpeakz.tech/)
+                      if [ "$STATUS" = "200" ]; then
+                          echo "https://crochetpeakz.tech is live (HTTP $STATUS)."
+                          exit 0
+                      fi
+                      echo "Attempt $attempt: production returned HTTP $STATUS; retrying..."
+                      sleep 5
+                  done
+                  echo "Production site did not return HTTP 200."
+                  exit 1
