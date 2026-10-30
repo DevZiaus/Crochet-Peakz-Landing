@@ -8,7 +8,7 @@ permissions:
 
 jobs:
     diagnose:
-        name: Diagnose domain and alias
+        name: Diagnose deployment routing
         runs-on: ubuntu-latest
         steps:
             - name: Query Vercel API
@@ -26,35 +26,12 @@ jobs:
                       echo
                   }
 
-                  echo "== user =="
-                  api "https://api.vercel.com/v2/user"
+                  DEPLOYMENT_ID=dpl_8QzNz7D683GLWyLzKm4KKeLrsWyh
 
-                  echo "== project (no teamId) =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID"
+                  echo "== deployment =="
+                  api "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID" \
+                      | jq '{id, url, readyState, type, framework, routes, functions, regions, build, output}'
 
-                  echo "== project (teamId) =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID"
-
-                  echo "== project domains (no teamId) =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains"
-
-                  echo "== project domains (teamId) =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID"
-
-                  echo "== apex domain (no teamId) =="
-                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech"
-
-                  echo "== apex domain (teamId) =="
-                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech?teamId=$VERCEL_ORG_ID"
-
-                  echo "== aliases (no teamId) =="
-                  api "https://api.vercel.com/v4/aliases?limit=100"
-
-                  echo "== aliases (teamId) =="
-                  api "https://api.vercel.com/v4/aliases?limit=100&teamId=$VERCEL_ORG_ID"
-
-                  echo "== deployments (no teamId) =="
-                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5"
-
-                  echo "== deployments (teamId) =="
-                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5&teamId=$VERCEL_ORG_ID"
+                  echo "== deployment files =="
+                  api "https://api.vercel.com/v6/deployments/$DEPLOYMENT_ID/files" \
+                      | jq '[.. | objects | select(has("name")) | .name] | unique | .[]' 2>/dev/null || true
