@@ -17,36 +17,44 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
               run: |
-                  set -euo pipefail
-
                   api() {
-                      curl -fsS -H "Authorization: Bearer $VERCEL_TOKEN" "$1"
+                      url="$1"
+                      code=$(curl -sS -o /tmp/vercel-response.json -w '%{http_code}' \
+                          -H "Authorization: Bearer $VERCEL_TOKEN" "$url")
+                      echo "HTTP $code $url"
+                      jq . /tmp/vercel-response.json 2>/dev/null || cat /tmp/vercel-response.json
+                      echo
                   }
 
-                  echo "== team =="
-                  api "https://api.vercel.com/v2/teams/$VERCEL_ORG_ID" \
-                      | jq '{id, slug, name, plan}'
+                  echo "== user =="
+                  api "https://api.vercel.com/v2/user"
 
-                  echo "== project =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
-                      | jq '{id, name, accountId, framework, nodeVersion, createdAt}'
+                  echo "== project (no teamId) =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID"
 
-                  echo "== project domains =="
-                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" \
-                      | jq '.domains[] | {name, verified, redirect, redirectStatusCode, gitBranch, createdAt, updatedAt}'
+                  echo "== project (teamId) =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID"
 
-                  echo "== apex domain =="
-                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech?teamId=$VERCEL_ORG_ID" \
-                      | jq '{name, projectId, teamId, verified, verificationRecord, configured, createdAt, updatedAt}'
+                  echo "== project domains (no teamId) =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains"
 
-                  echo "== www domain =="
-                  api "https://api.vercel.com/v5/domains/www.crochetpeakz.tech?teamId=$VERCEL_ORG_ID" \
-                      | jq '{name, projectId, teamId, verified, verificationRecord, configured, createdAt, updatedAt}'
+                  echo "== project domains (teamId) =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID"
 
-                  echo "== aliases =="
-                  api "https://api.vercel.com/v4/aliases?limit=100&teamId=$VERCEL_ORG_ID" \
-                      | jq '.aliases[] | {alias, deploymentId, projectId, redirect, createdAt}'
+                  echo "== apex domain (no teamId) =="
+                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech"
 
-                  echo "== recent deployments =="
-                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5&teamId=$VERCEL_ORG_ID" \
-                      | jq '.deployments[] | {uid, url, state, target, alias, createdAt}'
+                  echo "== apex domain (teamId) =="
+                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech?teamId=$VERCEL_ORG_ID"
+
+                  echo "== aliases (no teamId) =="
+                  api "https://api.vercel.com/v4/aliases?limit=100"
+
+                  echo "== aliases (teamId) =="
+                  api "https://api.vercel.com/v4/aliases?limit=100&teamId=$VERCEL_ORG_ID"
+
+                  echo "== deployments (no teamId) =="
+                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5"
+
+                  echo "== deployments (teamId) =="
+                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5&teamId=$VERCEL_ORG_ID"
