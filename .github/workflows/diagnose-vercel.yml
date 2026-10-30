@@ -8,31 +8,17 @@ permissions:
 
 jobs:
     diagnose:
-        name: Diagnose deployment routing
+        name: Set project framework
         runs-on: ubuntu-latest
         steps:
-            - name: Query Vercel API
+            - name: Update project framework
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
               run: |
-                  api() {
-                      url="$1"
-                      code=$(curl -sS -o /tmp/vercel-response.bin -w '%{http_code}' \
-                          -H "Authorization: Bearer $VERCEL_TOKEN" "$url")
-                      echo "HTTP $code $url"
-                      file /tmp/vercel-response.bin
-                      head -c 300 /tmp/vercel-response.bin
-                      echo
-                      jq . /tmp/vercel-response.bin 2>/dev/null || true
-                      echo
-                  }
-
-                  DEPLOYMENT_ID=dpl_8QzNz7D683GLWyLzKm4KKeLrsWyh
-
-                  echo "== deployment =="
-                  api "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID"
-
-                  echo "== deployment files =="
-                  api "https://api.vercel.com/v6/deployments/$DEPLOYMENT_ID/files"
+                  curl -sS -X PATCH \
+                      -H "Authorization: Bearer $VERCEL_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d '{"framework":"nextjs"}' \
+                      "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID" \
+                      | jq '{id, name, framework, buildCommand, outputDirectory}'
