@@ -30,7 +30,7 @@ jobs:
                   cache: npm
 
             - name: Install dependencies
-              run: npm ci
+              run: npm ci --legacy-peer-deps
 
             - name: Lint
               run: npm run lint
@@ -62,7 +62,7 @@ jobs:
                   cache: npm
 
             - name: Install dependencies
-              run: npm ci
+              run: npm ci --legacy-peer-deps
 
             - name: Pull Vercel environment
               run: npx vercel@latest pull --yes --environment="$VERCEL_ENV" --token="$VERCEL_TOKEN"
