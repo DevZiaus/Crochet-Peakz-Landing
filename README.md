@@ -99,7 +99,7 @@ The current contact form is a client-side presentation flow: submitting the form
 
 ## Deployment
 
-The project is ready to deploy on Vercel. Import the repository into Vercel, select the project root, and use the default Next.js settings:
+The project deploys to Vercel through GitHub Actions using the project credentials stored in repository secrets. Vercel Git integration is not required. If you set up a new Vercel project, select the project root and use the default Next.js settings:
 
 ```text
 Framework preset: Next.js
@@ -118,7 +118,7 @@ npm run build
 
 ### GitHub Actions deployment
 
-The [Vercel workflow](./.github/workflows/vercel.yml) validates every push and pull request with linting, typechecking, and a production build. It deploys to production when changes are pushed to `main` and creates a preview deployment for pull requests from this repository.
+The [Vercel workflow](./.github/workflows/vercel.yml) validates every push and pull request with linting, typechecking, and a production build. When changes are pushed to `main`, it deploys to production with the Vercel CLI, aliases the deployment to `crochetpeakz.tech`, and verifies that the live domain returns HTTP 200. Pull requests run validation only.
 
 Add these GitHub repository secrets before enabling deployment:
 
