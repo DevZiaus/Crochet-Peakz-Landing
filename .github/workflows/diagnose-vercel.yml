@@ -1,0 +1,52 @@
+name: Diagnose Vercel
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    diagnose:
+        name: Diagnose domain and alias
+        runs-on: ubuntu-latest
+        steps:
+            - name: Query Vercel API
+              env:
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+              run: |
+                  set -euo pipefail
+
+                  api() {
+                      curl -fsS -H "Authorization: Bearer $VERCEL_TOKEN" "$1"
+                  }
+
+                  echo "== team =="
+                  api "https://api.vercel.com/v2/teams/$VERCEL_ORG_ID" \
+                      | jq '{id, slug, name, plan}'
+
+                  echo "== project =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
+                      | jq '{id, name, accountId, framework, nodeVersion, createdAt}'
+
+                  echo "== project domains =="
+                  api "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" \
+                      | jq '.domains[] | {name, verified, redirect, redirectStatusCode, gitBranch, createdAt, updatedAt}'
+
+                  echo "== apex domain =="
+                  api "https://api.vercel.com/v5/domains/crochetpeakz.tech?teamId=$VERCEL_ORG_ID" \
+                      | jq '{name, projectId, teamId, verified, verificationRecord, configured, createdAt, updatedAt}'
+
+                  echo "== www domain =="
+                  api "https://api.vercel.com/v5/domains/www.crochetpeakz.tech?teamId=$VERCEL_ORG_ID" \
+                      | jq '{name, projectId, teamId, verified, verificationRecord, configured, createdAt, updatedAt}'
+
+                  echo "== aliases =="
+                  api "https://api.vercel.com/v4/aliases?limit=100&teamId=$VERCEL_ORG_ID" \
+                      | jq '.aliases[] | {alias, deploymentId, projectId, redirect, createdAt}'
+
+                  echo "== recent deployments =="
+                  api "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=5&teamId=$VERCEL_ORG_ID" \
+                      | jq '.deployments[] | {uid, url, state, target, alias, createdAt}'
