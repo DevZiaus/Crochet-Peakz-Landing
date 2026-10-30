@@ -115,3 +115,17 @@ Run the production checks locally with:
 npm run typecheck
 npm run build
 ```
+
+### GitHub Actions deployment
+
+The [Vercel workflow](./.github/workflows/vercel.yml) validates every push and pull request with linting, typechecking, and a production build. It deploys to production when changes are pushed to `main` and creates a preview deployment for pull requests from this repository.
+
+Add these GitHub repository secrets before enabling deployment:
+
+| Secret | Description |
+| --- | --- |
+| `VERCEL_TOKEN` | Vercel access token |
+| `VERCEL_ORG_ID` | Vercel team or account ID |
+| `VERCEL_PROJECT_ID` | Vercel project ID |
+
+Pull requests from forks still run validation but do not deploy, so protected Vercel secrets are not exposed.

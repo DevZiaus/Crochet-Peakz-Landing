@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowUpRight, Instagram, Menu, X, Facebook } from 'lucide-react';
 
@@ -14,6 +15,7 @@ const navItems = [
 
 export function SiteHeader() {
     const [open, setOpen] = useState(false);
+    const pathname = usePathname();
 
     return (
         <header className='site-header'>
@@ -25,6 +27,7 @@ export function SiteHeader() {
                             alt='Crochet PeakZ mountain mark'
                             width={64}
                             height={64}
+                            loading='eager'
                         />
                     </span>
                     <span className='brand-name'>
@@ -33,7 +36,14 @@ export function SiteHeader() {
                 </Link>
                 <nav className='desktop-nav' aria-label='Main navigation'>
                     {navItems.map((item) => (
-                        <Link key={item.href} href={item.href}>
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={pathname === item.href ? 'active' : undefined}
+                            aria-current={
+                                pathname === item.href ? 'page' : undefined
+                            }
+                        >
                             {item.label}
                         </Link>
                     ))}
@@ -79,6 +89,10 @@ export function SiteHeader() {
                         <Link
                             key={item.href}
                             href={item.href}
+                            className={pathname === item.href ? 'active' : undefined}
+                            aria-current={
+                                pathname === item.href ? 'page' : undefined
+                            }
                             onClick={() => setOpen(false)}
                         >
                             {item.label}
