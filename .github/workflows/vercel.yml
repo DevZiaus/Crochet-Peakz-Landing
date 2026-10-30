@@ -1,4 +1,4 @@
-name: Deploy
+name: CI
 
 on:
     push:
@@ -9,7 +9,7 @@ on:
             - main
 
 concurrency:
-    group: vercel-${{ github.ref }}
+    group: ci-${{ github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -38,19 +38,4 @@ jobs:
             - name: Build
               run: npm run build
 
-    deploy:
-        name: Deploy
-        needs: validate
-        if: github.event_name == 'push'
-        runs-on: ubuntu-latest
-        environment: production
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
 
-            - name: Deploy to Vercel
-              run: npx vercel@latest --prod --token="$VERCEL_TOKEN"
-              env:
-                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-                  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
