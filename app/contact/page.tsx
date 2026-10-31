@@ -33,13 +33,17 @@ export default function Contact() {
                         <div className='contact-details'>
                             <div>
                                 <span>Email</span>
-                                <a href='mailto:hello@crochetpeakz.tech'>
+                                <a
+                                    className='contact-email'
+                                    href='mailto:hello@crochetpeakz.tech'
+                                >
                                     hello@crochetpeakz.tech
                                 </a>
                             </div>
                             <div>
                                 <span>Social</span>
                                 <a
+                                    className='contact-facebook'
                                     href='https://www.facebook.com/crochet.peakz'
                                     target='_blank'
                                     rel='noreferrer'
@@ -47,6 +51,7 @@ export default function Contact() {
                                     Facebook / crochet.peakz
                                 </a>
                                 <a
+                                    className='contact-instagram'
                                     href='https://www.instagram.com/crochetpeakz/'
                                     target='_blank'
                                     rel='noreferrer'

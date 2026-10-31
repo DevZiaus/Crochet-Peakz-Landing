@@ -31,7 +31,7 @@ export function SiteHeader() {
                         />
                     </span>
                     <span className='brand-name'>
-                        Crochet <em>PeakZ</em>
+                        CrocheT <em>PeakZ</em>
                     </span>
                 </Link>
                 <nav className='desktop-nav' aria-label='Main navigation'>
@@ -39,7 +39,9 @@ export function SiteHeader() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={pathname === item.href ? 'active' : undefined}
+                            className={
+                                pathname === item.href ? 'active' : undefined
+                            }
                             aria-current={
                                 pathname === item.href ? 'page' : undefined
                             }
@@ -50,7 +52,7 @@ export function SiteHeader() {
                 </nav>
                 <div className='header-actions'>
                     <a
-                        className='social-link'
+                        className='social-link social-facebook'
                         href='https://www.facebook.com/crochet.peakz'
                         target='_blank'
                         rel='noreferrer'
@@ -59,7 +61,7 @@ export function SiteHeader() {
                         <Facebook size={17} />
                     </a>
                     <a
-                        className='social-link'
+                        className='social-link social-instagram'
                         href='https://www.instagram.com/crochetpeakz/'
                         target='_blank'
                         rel='noreferrer'
@@ -89,7 +91,9 @@ export function SiteHeader() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={pathname === item.href ? 'active' : undefined}
+                            className={
+                                pathname === item.href ? 'active' : undefined
+                            }
                             aria-current={
                                 pathname === item.href ? 'page' : undefined
                             }
@@ -124,6 +128,7 @@ export function SiteFooter() {
                 <div>
                     <p className='footer-label'>Stay connected</p>
                     <a
+                        className='footer-social footer-facebook'
                         href='https://www.facebook.com/crochet.peakz'
                         target='_blank'
                         rel='noreferrer'
@@ -131,6 +136,7 @@ export function SiteFooter() {
                         Facebook <ArrowUpRight size={14} />
                     </a>
                     <a
+                        className='footer-social footer-instagram'
                         href='https://www.instagram.com/crochetpeakz/'
                         target='_blank'
                         rel='noreferrer'
