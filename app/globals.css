@@ -517,10 +517,31 @@ h2 {
     color: var(--instagram);
 }
 .contact-form {
+    position: relative;
     display: grid;
     gap: 22px;
     padding: 34px;
     background: var(--cream);
+}
+.contact-form button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+.form-error {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(231, 124, 96, 0.45);
+    background: rgba(231, 124, 96, 0.1);
+    color: #8a3d2c;
+    font-size: 14px;
+}
+.form-hp {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
 }
 .form-row {
     display: grid;
