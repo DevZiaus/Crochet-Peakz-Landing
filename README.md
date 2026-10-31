@@ -18,6 +18,8 @@ The Crochet PeakZ marketing site is a warm, responsive Next.js landing page for 
 - Tailwind CSS and custom CSS
 - Radix UI components
 - Lucide icons
+- Resend for contact form email delivery
+- Upstash Redis / Vercel KV (optional) for distributed rate limiting
 - ESLint 9 with the Next.js flat configuration
 - Vercel deployment
 
@@ -54,12 +56,17 @@ The Crochet PeakZ marketing site is a warm, responsive Next.js landing page for 
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | No | Canonical public URL used for metadata. Defaults to `https://crochetpeakz.com`. |
-| `NEXT_PUBLIC_SUPABASE_URL` | No | Supabase project URL for future integrations. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | No | Supabase anonymous browser key for future integrations. |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical public URL used for metadata. Defaults to `https://crochetpeakz.tech`. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID. Leave blank to disable tracking. |
+| `RESEND_API_KEY` | Yes, for the contact form | Resend API key used by `/api/contact` to send messages. |
+| `CONTACT_EMAIL` | No | Destination address for contact messages. Defaults to `hello@crochetpeakz.tech`. |
+| `CONTACT_FROM_EMAIL` | No | Verified Resend sender. Defaults to `Crochet PeakZ <hello@crochetpeakz.tech>`. `RESEND_FROM_EMAIL` is accepted as a fallback. |
+| `UPSTASH_REDIS_REST_URL` | No | Upstash Redis REST URL. Recommended on Vercel so rate limits are shared across instances. |
+| `UPSTASH_REDIS_REST_TOKEN` | No | Upstash Redis REST token. Recommended on Vercel. |
 
-Variables beginning with `NEXT_PUBLIC_` are exposed to the browser. Do not put private credentials in them. Contact email delivery secrets such as `RESEND_API_KEY` and `CONTACT_EMAIL` should be configured in the relevant Supabase environment, not committed to this repository.
+Variables beginning with `NEXT_PUBLIC_` are exposed to the browser. Do not put private credentials in them. Keep `RESEND_API_KEY`, `CONTACT_EMAIL`, and the Upstash/Vercel KV credentials in `.env.local` or the Vercel project settings.
+
+The rate limiter also accepts Vercel KV's `KV_REST_API_URL` and `KV_REST_API_TOKEN` variables.
 
 ## Available scripts
 
@@ -95,7 +102,26 @@ public/images/       Static image assets
 
 ## Contact form
 
-The current contact form is a client-side presentation flow: submitting the form displays a success state but does not yet send or persist a message. Connect it to the project’s preferred backend or email service before using it for production submissions.
+Submissions are posted to `/api/contact` and delivered with [Resend](https://resend.com). By default, messages are sent to `hello@crochetpeakz.tech` with the visitor's address set as `Reply-To`.
+
+To enable delivery:
+
+1. Verify the `crochetpeakz.tech` domain in Resend.
+2. Create a Resend API key.
+3. Set `RESEND_API_KEY` in `.env.local` or the Vercel project settings. Optionally override `CONTACT_EMAIL` and `CONTACT_FROM_EMAIL`.
+4. Redeploy so the server picks up the new variables.
+
+The form includes layered spam protection:
+
+- A hidden honeypot field that must remain empty
+- A minimum three-second fill time
+- A limit of three links per message
+- Same-origin request checks
+- Validation and length limits on every field
+
+Submissions are limited to one per IP address every 30 minutes. Configure `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (or the Vercel KV equivalents) for a limit shared across serverless instances. Without those variables, the project uses an in-memory fallback, which works in local development but is not reliable across multiple production instances.
+
+The visitor's IP is hashed before it is used as a rate-limit key, and failed email sends clear the rate-limit entry so the visitor can retry.
 
 ## Deployment
 
